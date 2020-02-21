@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- 兼容IE -->
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <title>大事件 - 获取用户详情</title>
+  <link rel="stylesheet" href="js/bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/reset.css">
+  <link rel="stylesheet" href="css/iconfont.css">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="js/jquery-1.12.4.min.js"></script>
+  <script src="js/bootstrap/js/bootstrap.min.js"></script>
+</head>
+
+<body>
+  <div class="container-fluid">
+    <div class="common_title">
+      获取用户详情
+    </div>
+    <div class="container-fluid common_con">
+      <form class="form-horizontal article_form" id="form">
+        <div class="form-group">
+          <label for="inputEmail1" class="col-sm-2 control-label">用户名称: </label>
+          <div class="col-sm-4">
+            <input type="text" name="username" class="form-control username" id="inputEmail1" placeholder="宇宙超级无敌大帅哥">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputEmail2" class="col-sm-2 control-label">昵称: </label>
+          <div class="col-sm-4">
+            <input type="text" name="nickname" class="form-control nickname" id="inputEmail2" placeholder="远哥哥">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputEmail3" class="col-sm-2 control-label">邮箱: </label>
+          <div class="col-sm-4">
+            <input type="text" name="email" class="form-control email" id="inputEmail3"
+              placeholder="fsy34654396@163.com">
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="inputFile1" class="col-sm-2 control-label">头像上传: </label>
+          <div class="col-sm-10">
+            <label for="exampleInputFile">
+              <img src="" class="user_pic" alt="">
+            </label>
+            <input type="file" name="userPic" id="exampleInputFile">
+          </div>
+        </div>
+        <div class="form-group">
+          <div class="form-group">
+            <label for="inputPassword1" class="col-sm-2 control-label">密码: </label>
+            <div class="col-sm-4">
+              <input type="password" name="password" class="form-control password" id="inputPassword1"
+                placeholder="Password">
+            </div>
+          </div>
+          <div class="col-sm-offset-2 col-sm-10">
+            <button type="submit" class="btn btn-success btn-edit">修改</button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!--  模态框 -->
+  <div class="modal fade" tabindex="-1" role="dialog" id="myModal">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+              aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title">用户信息</h4>
+        </div>
+        <div class="modal-body">
+          <p>修改成功</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-success" data-dismiss="modal">保存</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="./js/http.js"></script>
+</body>
+<script>
+  $(function () {
+    $.ajax({
+      url: BigNew.user_detail,
+      type: 'get',
+      dataType: 'json',
+      success: function (backData) {
+        // $('input.username').val(backData.data.username);
+        // $('input.nickname').val(backData.data.nickname);
+        // $('input.email').val(backData.data.email);
+        // $('input.password').val(backData.data.password);
+
+        $('.user_pic').attr('src', backData.data.userPic);
+        for (var key in backData.data) {
+          $('input.' + key).val(backData.data[key]);
+        }
+      }
+    });
+
+    //1.给file表单元素注册onchange事件
+    $('#exampleInputFile').change(function () {
+      //1.2 获取用户选择的图片
+      var file = this.files[0];
+      //1.3 将文件转为src路径
+      var url = URL.createObjectURL(file);
+      //1.4 将url路径赋值给img标签的src
+      $('.user_pic').attr('src', url);
+    });
+
+    $('.btn-edit').on('click', function (e) {
+      //禁用表单默认提交事件
+      var fd = new FormData($('#form')[0])
+      e.preventDefault();
+      $.ajax({
+        url: BigNew.user_edit,
+        type: 'post',
+        dataType: 'json',
+        data: fd,
+        contentType: false,
+        processData: false,
+        success: function (backData) {
+
+          if (backData.code == 200) {
+            $('#myModal').modal();
+            window.parent.location.reload();
+          }
+        }
+      });
+    });
+  })
+</script>
+
+</html>
